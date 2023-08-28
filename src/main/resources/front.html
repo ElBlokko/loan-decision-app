@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Loan Decision Frontend</title>
+</head>
+<body>
+<h1>Loan Decision Form</h1>
+<form id="loanForm">
+  <label for="personalCode">Personal Code:</label>
+  <input type="text" id="personalCode" name="personalCode"><br><br>
+
+  <label for="loanAmount">Loan Amount:</label>
+  <input type="number" id="loanAmount" name="loanAmount" min="2000" max="10000"><br><br>
+
+  <label for="loanPeriod">Loan Period (months):</label>
+  <input type="number" id="loanPeriod" name="loanPeriod" min="12" max="60"><br><br>
+
+  <button type="button" onclick="submitForm()">Check Loan Decision</button>
+</form>
+
+<div id="result" style="margin-top: 20px;"></div>
+
+<script>
+        function submitForm() {
+            const form = document.getElementById("loanForm");
+            const personalCode = form.personalCode.value;
+            const loanAmount = form.loanAmount.value;
+            const loanPeriod = form.loanPeriod.value;
+
+            const requestData = new URLSearchParams();
+            requestData.append("personalCode", personalCode);
+            requestData.append("loanAmount", loanAmount);
+            requestData.append("loanPeriod", loanPeriod);
+
+            fetch("http://localhost:8080/loan-decision/check", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: requestData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById("result");
+                resultDiv.innerHTML = `<p>Decision: ${data.decision}</p><p>Approved Amount: ${data.approvedAmount}</p><p>Suggested Loan Period: ${data.suggestedLoanPeriod}</p>`;
+            })
+            .catch(error => {
+                console.error("An error occurred:", error);
+            });
+        }
+
+</script>
+</body>
+</html>
